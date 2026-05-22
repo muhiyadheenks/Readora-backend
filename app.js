@@ -6,11 +6,16 @@ const cors = require('cors')
 const categoryRoutes = require('./routes/categoryRoute')
 const homeRoutes = require('./routes/homeRoutes')
 const cartRoutes = require('./routes/cartRoutes')
+const wishlistroutes = require('./routes/wishlistRoute');
+const orderRoutes = require('./routes/orderRouter');
+const paymentRoute = require('./routes/paymentRoute');
+
+// const addressRoutes = require('./routes/addressRoutes');
 
 
 const app = express()
 app.use(cors({
-    origin: "http://localhost:5175",
+    origin: "http://localhost:5173",
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
 }))
@@ -23,7 +28,10 @@ app.use("/api/users", userRoutes)
 app.use("/api", categoryRoutes)
 app.use("/api", homeRoutes)
 app.use("/api", cartRoutes)
-
+app.use("/api", wishlistroutes)
+app.use("/api", orderRoutes)
+app.use('/api/payment', paymentRoute);
+// app.use("/api", addressRoutes)
 
 app.use(errorHandler)
 module.exports = app

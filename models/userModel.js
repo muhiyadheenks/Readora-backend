@@ -26,16 +26,18 @@ const userSchema = mongoose.Schema({
 
     },
     isBlock: {
-        type: String,
-        enum: [false, true],
+        type: Boolean,
         default: false
     },
-    lastName: String,
-    address: String,
-    city: String,
-    state: String,
-    pincode: Number,
-    wishlist: String
+    address: {
+        address: String,
+        post: String,
+        hometown: String,
+        city: String,
+        district: String,
+        state: String,
+        pincode: Number
+    }
 })
 
 module.exports = mongoose.model('user', userSchema)

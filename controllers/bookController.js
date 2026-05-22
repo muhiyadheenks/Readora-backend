@@ -1,13 +1,7 @@
 const Books = require("../models/bookModel")
 const asyncHandler = require('express-async-handler')
 
-//add book
-const addBook = asyncHandler(async (req, res) => {
-    console.log('data reached', req.body)
-    const newbook = await Books.create(req.body)
-    res.send(newbook)
 
-})
 // all books
 const getBooks = asyncHandler(async (req, res) => {
     const { category, title } = req.query;
@@ -47,7 +41,6 @@ const bestBooks = async (req, res) => {
 
 
 module.exports = {
-    addBook,
     getBooks,
     bookDetails,
     bestBooks

@@ -2,52 +2,41 @@ const Cart = require('../models/cartModel');
 const asyncHandler = require('express-async-handler')
 
 
-// add cart
-// const addToCart = asyncHandler(async (req, res) => {
-//     const { userId, items } = req.body;
 
-//     const cart = await Cart.create({ userId, items })
-//     const populated = await cart.populated('items.book');
-//     res.json(populated)
+const addToCart = async (req, res, next) => {
+    try {
+        const { userId, items } = req.body;
 
-// })
+        const cart = await Cart.findOneAndUpdate(
+            { userId },
+            { userId, items },
+            { new: true, upsert: true }
+        );
 
-const addToCart = asyncHandler(async (req, res) => {
+        const populated = await cart.populate('items.book');
 
-    const { items } = req.body;
+        res.json(populated);
 
-    const cart = await Cart.create({
-        user: req.user.id,
-        items
-    });
-
-    const populated = await cart.populate('items.book');
-
-    res.json(populated);
-});
+    } catch (error) {
+        next(error)
+    }
+};
 
 
 //get cart
 const getCart = asyncHandler(async (req, res) => {
-    const { userId } = req.body;
-    const cart = await Cart.find({ userId }).populate("items.book");
-    if (!cart) return res.json({ items: [] })
+    const { userId } = req.query;
+    const cart = await Cart.findOne({ userId }).populate("items.book");
+    if (!cart) return res.json({})
     res.json(cart)
 })
 
 
 // remove cart
-const removeCart = asyncHandler(async (req, res) => {
-    const cart = await Cart.findOne({ user: req.user.id });
-    if (!cart) return res.status(404).json({ message: 'cart not found' });
-
-    cart.items.filter(
-        item => item.book.toString() !== req.params.bookId
-    );
-    await cart.save();
-    await cart.populate(items.book);
-    res.json(cart)
-})
+const deleteCart = asyncHandler(async (req, res) => {
+    await Cart.findByIdAndDelete(req.params.id);
+    res.json({ message: 'Cart deleted' });
+});
 
 //update cart
 const updateQuantity = asyncHandler(async (req, res) => {
@@ -57,14 +46,16 @@ const updateQuantity = asyncHandler(async (req, res) => {
         { items },
         { new: true }
     ).populate("items.book")
-    if (!cart) return res.status(404);
-    throw new Error('cart not found');
+    if (!cart) {
+        return res.status(404);
+        throw new Error('cart not found');
+    }
 
     res.json(cart)
 })
 module.exports = {
     addToCart,
     getCart,
-    removeCart,
+    deleteCart,
     updateQuantity
 }
