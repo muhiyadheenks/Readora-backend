@@ -43,6 +43,7 @@ const adminLogin = async (req, res, next) => {
 const getUsers = async (req, res, next) => {
     try {
         const users = await User.find()
+        console.log(users);
         res.send(users)
 
     } catch (error) {

@@ -9,9 +9,8 @@ const cartRoutes = require('./routes/cartRoutes')
 const wishlistroutes = require('./routes/wishlistRoute');
 const orderRoutes = require('./routes/orderRouter');
 const paymentRoute = require('./routes/paymentRoute');
-
-// const addressRoutes = require('./routes/addressRoutes');
-
+const dashboardRoutes = require('./routes/dashbordRoute');
+const messgeroute = require('./routes/messageRute')
 
 const app = express()
 app.use(cors({
@@ -31,7 +30,7 @@ app.use("/api", cartRoutes)
 app.use("/api", wishlistroutes)
 app.use("/api", orderRoutes)
 app.use('/api/payment', paymentRoute);
-// app.use("/api", addressRoutes)
-
+app.use('/api', dashboardRoutes)
+app.use('/api', messgeroute)
 app.use(errorHandler)
 module.exports = app

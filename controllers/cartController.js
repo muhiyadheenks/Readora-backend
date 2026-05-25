@@ -44,11 +44,11 @@ const updateQuantity = asyncHandler(async (req, res) => {
     const cart = await Cart.findByIdAndUpdate(
         req.params.id,
         { items },
-        { new: true }
+        { returnDocument: 'after' }
     ).populate("items.book")
     if (!cart) {
-        return res.status(404);
-        throw new Error('cart not found');
+        res.status(404);
+        throw new Error("Cart not found");
     }
 
     res.json(cart)
