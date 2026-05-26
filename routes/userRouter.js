@@ -6,6 +6,9 @@ const userController = require('../controllers/authController')
 const adminAuthController = require('../adminControllers/adminAuthController')
 const { protect, isAdmin, isUser } = require('../service/jwtMidleware')
 
+
+
+router.post('/refresh-token', userController.refreshTokenHandler);
 //userside
 router.get('/address', protect, isUser, userController.getAddress);
 router.post('/login', userController.loginUser)

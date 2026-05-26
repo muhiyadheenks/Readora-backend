@@ -37,7 +37,8 @@ const userSchema = mongoose.Schema({
         district: String,
         state: String,
         pincode: Number
-    }
+    },
+    refreshToken: { type: String, default: null }
 })
 
 module.exports = mongoose.model('user', userSchema)

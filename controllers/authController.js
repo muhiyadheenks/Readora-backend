@@ -26,8 +26,18 @@ const createUser = async (req, res, next) => {
                 address
             }
         )
+
+        //create access and refresh tocken
+        const token = generateAccessToken(newUser._id);
+        const refreshToken = generateRefreshToken(newUser._id);
+
+        newUser.refreshToken = refreshToken;
+        await newUser.save();
+
         res.status(201).send({
             message: "User Registered Successfully",
+            token,
+            refreshToken,
             user: {
                 id: newUser._id,
                 name: newUser.name,
@@ -61,14 +71,17 @@ const loginUser = async (req, res, next) => {
             return res.status(400).send("Invalid Password")
         }
 
-        const token = jwt.sign(
-            { id: user._id },
-            process.env.JWT_SECRET,
-            { expiresIn: '1d' }
-        )
+        //create access and refresh tocken
+
+        const token = generateAccessToken(user._id);
+        const refreshToken = generateRefreshToken(user._id);
+
+        user.refreshToken = refreshToken;
+        await user.save();
         res.send({
             message: "Login Success",
             token,
+            refreshToken,
             user: {
                 _id: user._id,
                 name: user.name,
@@ -100,9 +113,43 @@ const resetPassword = async (req, res, next) => {
     }
 };
 
+
+// Refresh Token Handler
+const refreshTokenHandler = async (req, res, next) => {
+    try {
+        const { refreshToken } = req.body;
+
+        if (!refreshToken) {
+            return res.status(401).json({ message: "No refresh token" });
+        }
+
+        const decoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET);
+        const user = await User.findById(decoded.id);
+
+        if (!user || user.refreshToken !== refreshToken) {
+            return res.status(401).json({ message: "Invalid refresh token" });
+        }
+
+        const newAccessToken = generateAccessToken(user._id);
+        const newRefreshToken = generateRefreshToken(user._id);
+
+        user.refreshToken = newRefreshToken;
+        await user.save();
+
+        res.json({
+            token: newAccessToken,
+            refreshToken: newRefreshToken
+        });
+
+    } catch (error) {
+        return res.status(401).json({ message: "Refresh token expired, please login again" });
+    }
+};
+
 //logout
 const logout = async (req, res, next) => {
     try {
+        await User.findByIdAndUpdate(req.user._id, { refreshToken: null });
         res.status(200).json({
             success: true,
             message: "Logged out"
@@ -161,5 +208,6 @@ module.exports = {
     loginUser,
     logout,
     addAddress,
-    getAddress
+    getAddress,
+    refreshTokenHandler
 }
