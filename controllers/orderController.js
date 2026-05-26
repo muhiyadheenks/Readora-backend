@@ -1,7 +1,6 @@
 const asyncHandler = require('express-async-handler');
 const Order = require('../models/orderModel');
 const Cart = require('../models/cartModel');
-const { v4: uuidv4 } = require('uuid');
 
 
 //place order
@@ -16,7 +15,7 @@ const placeOrder = async (req, res, next) => {
         }
 
         const order = await Order.create({
-            userId: uuidv4(),
+            userId,
             items,
             totalAmount,
             paymentMethod: paymentMethod || 'COD',
