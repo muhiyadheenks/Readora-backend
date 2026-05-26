@@ -13,6 +13,12 @@ const dashboardRoutes = require('./routes/dashbordRoute');
 const messgeroute = require('./routes/messageRute')
 
 const app = express()
+
+app.get('/', (req, res) => {
+    res.send('Server is running!')
+})
+
+
 app.use(cors({
     origin: ["http://localhost:5173",
         'https://readora-chi.vercel.app'],
