@@ -3,6 +3,16 @@ const jwt = require('jsonwebtoken')
 const asyncHandler = require('express-async-handler')
 const bcrypt = require('bcryptjs')
 
+// Generate Access Token
+const generateAccessToken = (id) => {
+    return jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: '15m' })
+}
+
+// Generate Refresh Token
+const generateRefreshToken = (id) => {
+    return jwt.sign({ id }, process.env.JWT_REFRESH_SECRET, { expiresIn: '7d' })
+}
+
 // $user register
 const createUser = async (req, res, next) => {
     try {
