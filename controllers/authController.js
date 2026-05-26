@@ -159,17 +159,19 @@ const refreshTokenHandler = async (req, res, next) => {
 //logout
 const logout = async (req, res, next) => {
     try {
-        await User.findByIdAndUpdate(req.user._id, { refreshToken: null });
+        // req.user ഉണ്ടെങ്കിൽ മാത്രം ഡാറ്റാബേസിൽ ടോക്കൺ കളയുക
+        if (req.user?._id) {
+            await User.findByIdAndUpdate(req.user._id, { refreshToken: null });
+        }
+
         res.status(200).json({
             success: true,
-            message: "Logged out"
+            message: "Logged out successfully"
         });
-
     } catch (error) {
         next(error)
     }
 };
-
 //add address
 const addAddress = async (req, res, next) => {
     try {
